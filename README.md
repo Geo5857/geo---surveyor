@@ -27,3 +27,4 @@ Open http://localhost:3000
 6. Add surveyor/company dashboards.
 7. Add Arabic/English i18n.
 8. Add admin verification workflow.
+Vercel deployment update
