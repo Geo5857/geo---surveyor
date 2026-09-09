@@ -34,7 +34,9 @@ export default function Hero() {
   return (
     <>
       <section className="hero-new">
-        <div className="hero-contours" />
+        <div className="hero-bg-grid" />
+        <div className="hero-contour contour-a" />
+        <div className="hero-contour contour-b" />
 
         <div className="hero-content">
           <div className="hero-copy">
@@ -79,12 +81,9 @@ export default function Hero() {
               alt="Professional surveying equipment"
               fill
               priority
+              sizes="(max-width: 900px) 100vw, 58vw"
               className="equipment-image"
             />
-
-            <div className="contour-line contour-one" />
-            <div className="contour-line contour-two" />
-            <div className="contour-line contour-three" />
           </div>
         </div>
       </section>
