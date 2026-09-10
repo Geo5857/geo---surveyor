@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   ShieldCheck,
   Users,
@@ -35,8 +34,6 @@ export default function Hero() {
     <>
       <section className="hero-new">
         <div className="hero-bg-grid" />
-        <div className="hero-contour contour-a" />
-        <div className="hero-contour contour-b" />
 
         <div className="hero-content">
           <div className="hero-copy">
@@ -76,12 +73,9 @@ export default function Hero() {
           <div className="hero-equipment">
             <div className="equipment-globe" />
 
-            <Image
+            <img
               src="/images/surveying-equipment-hero.png"
               alt="Professional surveying equipment"
-              fill
-              priority
-              sizes="(max-width: 900px) 100vw, 58vw"
               className="equipment-image"
             />
           </div>
