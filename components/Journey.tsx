@@ -5,44 +5,73 @@ import {
   BarChart3,
   BadgeCheck,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-const steps: [string, string, LucideIcon][] = [
-  ["Create Profile", "Build your professional profile", UserPlus],
-  ["Upload CV", "Upload your CV and certificates", UploadCloud],
-  ["Technical Interview", "Interview with our experts", MonitorCheck],
-  ["Get Your Score", "Receive your evaluation", BarChart3],
-  ["Verified Profile", "Get your verified surveyor profile", BadgeCheck],
+const steps = [
+  {
+    number: "01",
+    title: "Create Profile",
+    text: "Build your professional profile",
+    icon: UserPlus,
+  },
+  {
+    number: "02",
+    title: "Upload CV",
+    text: "Upload your CV and certificates",
+    icon: UploadCloud,
+  },
+  {
+    number: "03",
+    title: "Technical Interview",
+    text: "Interview with our experts",
+    icon: MonitorCheck,
+  },
+  {
+    number: "04",
+    title: "Get Your Score",
+    text: "Receive your professional evaluation",
+    icon: BarChart3,
+  },
+  {
+    number: "05",
+    title: "Verified Profile",
+    text: "Get your verified surveyor profile",
+    icon: BadgeCheck,
+  },
 ];
 
 export default function Journey() {
   return (
-    <section className="journey section-card" id="surveyors">
-      <div className="section-heading">
-        <span>THE PROCESS</span>
+    <section id="surveyors" className="journey-final">
+      <div className="journey-heading">
+        <div className="journey-eyebrow">THE PROCESS</div>
+
         <h2>Your Journey To Success</h2>
+
         <p>
           Simple steps to build a trusted and verified professional profile.
         </p>
       </div>
 
-      <div className="steps">
-        {steps.map(([title, text, Icon], i) => (
-          <div className="step" key={title}>
-            <div className="step-number">{i + 1}</div>
+      <div className="journey-steps">
+        {steps.map((step) => {
+          const Icon = step.icon;
 
-            <div className="step-icon">
-              <Icon />
-            </div>
+          return (
+            <article className="journey-step" key={step.number}>
+              <div className="journey-number">
+                {step.number}
+              </div>
 
-            <b>{title}</b>
-            <small>{text}</small>
+              <div className="journey-icon">
+                <Icon size={25} />
+              </div>
 
-            {i < steps.length - 1 && (
-              <div className="step-connector" />
-            )}
-          </div>
-        ))}
+              <h3>{step.title}</h3>
+
+              <p>{step.text}</p>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
