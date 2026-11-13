@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const videos = await rows<Video>("ggs_academy_videos", { select: "lesson_id,storage_path,source_type", id: `eq.${videoId}`, is_published: "eq.true", limit: "1" });
   if (!videos) return fail("Video lookup unavailable", 503);
   const video = videos[0];
-  if (!video?.storage_path || video.source_type !== "supabase_storage") return fail("Video not available");
+  if (!video?.storage_path || video.source_type !== "private") return fail("Video not available");
   const lessons = await rows<Lesson>("ggs_academy_lessons", { select: "course_id", id: `eq.${video.lesson_id}`, is_published: "eq.true", limit: "1" });
   if (!lessons) return fail("Lesson lookup unavailable", 503);
   const lesson = lessons[0];
