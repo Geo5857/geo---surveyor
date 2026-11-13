@@ -1,20 +1,29 @@
-# GGS Platform access model (approved direction)
+# GGS platform payment and access model — agreed business rules
 
-- There are **no subscription tiers/packages**.
-- Surveyors pay one fixed platform access fee and can use all surveyor services, including GGS Academy.
-- Companies have a distinct company account and company access fee, and can use all company services, including recruitment and candidate management.
-- Access is controlled by the authenticated user's role (`surveyor` or `company`) and **verified platform payment status**, not by individual courses.
-- The existing `public.profiles.user_type` column is the starting point for roles; validate its actual stored values before implementing access rules.
-- Fee amounts, billing period, payment processor, and renewal policy **are not specified yet**. Do not invent prices or activate charges.
-- No separate Academy subscription table should be created.
-- Until a verified GGS-wide payment ledger and secure server-side access check are implemented, private video playback must remain disabled (HTTP 503).
-- Private video bucket `ggs-academy-private-videos` remains private. No original MP4s have been uploaded yet.
-- Never grant paid access based on client-supplied role, payment flags, or unverified payment callbacks.
+## Surveyors
+- A surveyor pays a **one-time registration/access fee**, not a monthly or annual subscription.
+- After verified payment, the surveyor has ongoing access to all surveyor-facing platform services, including GGS Academy, profile/CV, and job applications, subject to platform terms.
+- Do not create separate Academy fees, course entitlements, subscription packages or recurring renewals.
 
-## Before release
-1. Confirm exact stored `profiles.user_type` values and ownership policies.
-2. Agree fixed surveyor fee, company fee, billing period and renewal/expiry rules.
-3. Implement GGS-wide payment records and server-verified entitlement after confirmed payment.
-4. Add role-specific signup, login, dashboards and full-service authorization.
-5. Connect Academy playback to verified **surveyor platform access**, not a course-specific entitlement.
-6. Upload and review videos, then test denial/allow cases and deploy.
+## Companies
+- Companies do **not** pay a recurring platform subscription.
+- A company may register and explore available services; it pays **each time it requests CVs**, as needed.
+- Only the specifically purchased CV request may release authorized candidate information, after verified payment and applicable privacy/consent checks.
+- Do not grant blanket CV download access merely because a company has paid for a different request.
+- Exact pricing basis (per CV, per request, or per batch), currency, amounts, and delivery/expiration policy are **not yet specified**.
+
+## Implementation and safety
+- `public.profiles.user_type` exists; confirm its actual values and authorization before building role-specific gates.
+- Payment events must be verified server-side using a trusted payment provider callback; never trust a browser's paid flag.
+- A single platform-wide one-time surveyor access grant is distinct from company CV purchase transactions.
+- Do not expose private CV files, candidate contact information or private academy videos through public storage or unauthenticated routes.
+- Until surveyor payment verification is integrated, `/api/academy/video` deliberately returns 503 (fail closed).
+- No separate academy entitlement table or migration is to be applied.
+- Academy videos still require content approval, private upload and playback tests.
+
+## Next steps
+1. Confirm fee amount for the one-time surveyor payment.
+2. Confirm company CV purchase unit (individual CV, batch, or request), fee and candidate consent policy.
+3. Implement secure payment order, webhook and durable ledger, then role-specific access checks.
+4. Connect surveyor paid access to Academy video playback; company CV delivery must require a matching paid order.
+5. Run end-to-end tests before enabling production payments.
