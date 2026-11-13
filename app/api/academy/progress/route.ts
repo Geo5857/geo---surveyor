@@ -38,9 +38,9 @@ export async function POST(request: NextRequest) {
   }
   // Existing Supabase RLS verifies that the authenticated user owns the row
   // and the lesson/course are both published.
-  const res = await fetch(`${session.base}/rest/v1/ggs_academy_progress`, {
+  const res = await fetch(`${session.base}/rest/v1/ggs_academy_progress?on_conflict=user_id,lesson_id`, {
     method: "POST",
-    headers: { ...session.headers, "Content-Type": "application/json", Prefer: "return=minimal" },
+    headers: { ...session.headers, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" },
     body: JSON.stringify({ user_id: session.userId, lesson_id: lessonId, completed_at: new Date().toISOString() }),
     cache: "no-store"
   });
