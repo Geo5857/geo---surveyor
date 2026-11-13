@@ -16,8 +16,6 @@ function supabase() {
 }
 export default function LessonPlayer({ lessonId, video }: Props) {
   const [token, setToken] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [completed, setCompleted] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -40,14 +38,6 @@ export default function LessonPlayer({ lessonId, video }: Props) {
       .then(data => setCompleted(Array.isArray(data.completed) && data.completed.some((x: { lesson_id: string }) => x.lesson_id === lessonId)))
       .catch(() => setMessage("Could not load progress."));
   }, [token, lessonId]);
-  async function signIn(e: React.FormEvent) {
-    e.preventDefault(); setBusy(true); setMessage("");
-    const api = supabase();
-    if (!api) { setMessage("Sign-in unavailable."); setBusy(false); return; }
-    const { error } = await api.auth.signInWithPassword({ email, password });
-    if (error) setMessage(error.message);
-    setPassword(""); setBusy(false);
-  }
   async function play() {
     if (!token || !video) return;
     setBusy(true); setMessage("");
@@ -77,12 +67,8 @@ export default function LessonPlayer({ lessonId, video }: Props) {
   }
   const youtubeId = video?.source_type === "youtube" && /^[A-Za-z0-9_-]{11}$/.test(video.youtube_video_id || "") ? video.youtube_video_id : null;
   return <div style={{ marginTop: 14 }}>
-    {youtubeId && <a href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer">Watch approved YouTube lesson ↗</a>}
-    {!token && <form onSubmit={signIn} style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-      <input aria-label="Email" type="email" placeholder="Email" required value={email} onChange={e => setEmail(e.target.value)} />
-      <input aria-label="Password" type="password" placeholder="Password" required value={password} onChange={e => setPassword(e.target.value)} />
-      <button type="submit" disabled={busy}>Sign in to track progress</button>
-    </form>}
+    {youtubeId && <iframe title="Academy lesson video" src={`https://www.youtube-nocookie.com/embed/${youtubeId}`} allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ width: "100%", maxWidth: 760, aspectRatio: "16 / 9", border: 0, borderRadius: 12 }} />}
+    {!token && <p role="status">Sign in to your existing GGS surveyor account to save progress and watch private lessons. No separate Academy account is required.</p>}
     {token && <>
       {video?.source_type === "storage" && <div>
         <button type="button" disabled={busy} onClick={play}>Play private video</button>
