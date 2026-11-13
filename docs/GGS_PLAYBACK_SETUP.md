@@ -1,13 +1,20 @@
-# GGS Academy private playback — integration checklist
+# GGS Platform access model (approved direction)
 
-This branch contains a **server-side entitlement-gated signed URL endpoint**, but is not production-ready until configured, reviewed and tested.
+- There are **no subscription tiers/packages**.
+- Surveyors pay one fixed platform access fee and can use all surveyor services, including GGS Academy.
+- Companies have a distinct company account and company access fee, and can use all company services, including recruitment and candidate management.
+- Access is controlled by the authenticated user's role (`surveyor` or `company`) and **verified platform payment status**, not by individual courses.
+- The existing `public.profiles.user_type` column is the starting point for roles; validate its actual stored values before implementing access rules.
+- Fee amounts, billing period, payment processor, and renewal policy **are not specified yet**. Do not invent prices or activate charges.
+- No separate Academy subscription table should be created.
+- Until a verified GGS-wide payment ledger and secure server-side access check are implemented, private video playback must remain disabled (HTTP 503).
+- Private video bucket `ggs-academy-private-videos` remains private. No original MP4s have been uploaded yet.
+- Never grant paid access based on client-supplied role, payment flags, or unverified payment callbacks.
 
-1. Review `supabase/migrations/20261113_ggs_academy_entitlements.sql` against real payment and enrollment records, then apply in Supabase. **Do not create active entitlements without verified payment or administrator authorization.**
-2. Set Vercel server variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` (the last must never be NEXT_PUBLIC).
-3. Confirm `ggs-academy-private-videos` remains private. Upload only reviewed MP4s through an authorized uploader. Verify each object exists.
-4. Create approved `ggs_academy_videos` records with `source_type='supabase_storage'`, a verified relative `storage_path`, and `is_published=true` **only after review**. Lessons and courses must also be published.
-5. On an authenticated client, POST `{ "videoId": "<uuid>" }` to `/api/academy/video` with `Authorization: Bearer <Supabase access token>`. Response provides a short-lived URL only for active authorized entitlements.
-6. Test no token, invalid token, expired entitlement, wrong course, unpublished video, missing object, valid subscriber, and URL expiry. Protect from abuse with hosting-level rate limits before launch.
-7. Review Supabase project security advisors, Vercel environment, and deployment checks before merging.
-
-**Important:** This endpoint returns a temporary media URL, not DRM. It is not a guarantee against recording or redistribution. Video binaries are not uploaded and billing integration is not implemented by this PR.
+## Before release
+1. Confirm exact stored `profiles.user_type` values and ownership policies.
+2. Agree fixed surveyor fee, company fee, billing period and renewal/expiry rules.
+3. Implement GGS-wide payment records and server-verified entitlement after confirmed payment.
+4. Add role-specific signup, login, dashboards and full-service authorization.
+5. Connect Academy playback to verified **surveyor platform access**, not a course-specific entitlement.
+6. Upload and review videos, then test denial/allow cases and deploy.
