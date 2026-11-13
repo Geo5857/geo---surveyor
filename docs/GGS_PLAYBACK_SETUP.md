@@ -7,8 +7,8 @@
 
 ## Company
 - Company account has no recurring subscription.
-- Company pays **for each request for a group of CVs**. Every request is an independent order, with a defined number of CVs, confirmed price and payment.
-- **Company batch pricing is not yet approved.** Do not charge companies or calculate a total until a pricing rule is chosen.
+- Company pays **for each fixed-size, fixed-price CV group**. Every purchase is an independent order. The backend snapshots the group's count and price at checkout.
+- **Fixed-group pricing model is approved, but group sizes and prices are not yet approved.** Keep products inactive and do not charge companies until concrete group sizes and prices are confirmed.
 - Release only CVs covered by the specific paid request, subject to surveyor consent and data protection; do not expose all candidate contact information.
 
 ## Draft database migration
@@ -24,7 +24,13 @@
 
 ## Open items before live payments
 - Select supported UAE payment provider and confirm merchant account.
-- Decide company CV batch price and whether it varies by number of CVs.
+- Approve fixed group sizes and a fixed AED price for each group; configure products only after approval.
 - Confirm exact `profiles.user_type` values, business verification and candidate CV consent.
 - Implement and test checkout, webhooks, refunds, role access and signed private file delivery.
 - Academy video assets are not yet uploaded; private playback remains fail-closed.
+
+## Fixed CV group catalog
+- `ggs_cv_group_products`: administrator-controlled fixed-size group, AED price and active status.
+- `ggs_company_cv_requests.group_product_id`: selected product; `quoted_cv_count` and `quoted_price_fils` snapshot the terms for that order.
+- The server must verify role, product activation and exact order price before creating checkout. Do not permit browser-supplied amounts.
+- No products are seeded or enabled because sizes and prices have not yet been chosen.
