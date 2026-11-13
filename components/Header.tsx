@@ -22,6 +22,7 @@ export default function Header() {
         <a href="#surveyors">For Surveyors</a>
         <a href="#companies">For Companies</a>
         <a href="#pricing">Pricing</a>
+        <a href="/academy">Surveyors Academy</a>
         <a href="#about">About Us</a>
         <a href="#resources">
           Resources <ChevronDown size={14} />
