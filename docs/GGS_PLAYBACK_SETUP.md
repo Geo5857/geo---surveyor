@@ -1,36 +1,24 @@
-# GGS payment model — approved
+# GGS Surveyor journey — approved order (2026-11-13)
 
-## Surveyor
-- One-time payment: **AED 49.00** (4900 fils).
-- Payment grants ongoing access to the full surveyor platform including GGS Academy; no recurring fee, no packages and no course-specific purchase.
-- Require a verified paid order tied to the authenticated surveyor's user ID. Repeated registration should not create duplicate paid-access charges.
+1. **Free registration** for a surveyor.
+2. **Complete professional profile**: experience, specialty, equipment, CV, certificates.
+3. **AI-assisted assessment** with written, voice and video stages tailored to the surveyor's field and experience. Capture consent for audio/video and disclose AI use. Provide human review/appeal for consequential scores.
+4. **Assessment results**: technical/communication evaluation, strengths, weaknesses, recommendations and professional level. Do not imply government licensing or formal accreditation.
+5. **Optional GGS Academy**: recommended courses and personalized improvement plan. Academy is supplementary, not a prerequisite for assessment or publication.
+6. **One-time AED 49 payment** to activate eligibility to display the surveyor profile to companies. The surveyor must explicitly opt in to company visibility and CV sharing. Never expose personal details or CV before consent and appropriate access checks.
 
-## Company
-- Company account has no recurring subscription.
-- Company pays **for each fixed-size, fixed-price CV group**. Every purchase is an independent order. The backend snapshots the group's count and price at checkout.
-- **Fixed-group pricing model is approved, but group sizes and prices are not yet approved.** Keep products inactive and do not charge companies until concrete group sizes and prices are confirmed.
-- Release only CVs covered by the specific paid request, subject to surveyor consent and data protection; do not expose all candidate contact information.
+Payment is **not a prerequisite for registration, profile completion, AI assessment, results, or Academy learning**. It is the gate for company-facing profile visibility only.
 
-## Draft database migration
-`supabase/migrations/20261113_ggs_platform_payments.sql` defines server-managed orders and company batch requests. RLS is enabled, with no direct anonymous/authenticated table privileges. It has **not been applied to production**. Provider integration must be completed first.
+## Company flow — deferred
+Companies purchase fixed-price CV groups when needed. Do not implement or launch company flows until the surveyor journey is complete. Group pricing remains a draft proposal, not activated.
 
-## Payment lifecycle
-1. Authenticated user requests checkout; backend verifies their role against server-owned `profiles.user_type`.
-2. Server creates a pending order with price fixed server-side: surveyor AED 49, or approved company CV batch quote.
-3. Backend initiates payment provider checkout with an idempotency key. Never trust price or paid status sent from browser.
-4. Provider webhook signature, event ID, currency, amount and order ownership are verified; server marks order paid atomically, once.
-5. Surveyor gains access to all surveyor services. Company gains access to **only its paid CV request** after consent checks.
-6. Refunds, disputes, retries, cancellations and receipts must be handled. Keep payment card details with provider only.
+## Implementation status
+The website currently has marketing pages and Academy catalog scaffolding. The full surveyor dashboard, AI written/voice/video assessment UI and pipeline, report display, consent controls, payment gateway, and verified company visibility are **not implemented or end-to-end tested**. Existing Supabase assessment/report tables can be reused after checking policies and schemas.
 
-## Open items before live payments
-- Select supported UAE payment provider and confirm merchant account.
-- Approve fixed group sizes and a fixed AED price for each group; configure products only after approval.
-- Confirm exact `profiles.user_type` values, business verification and candidate CV consent.
-- Implement and test checkout, webhooks, refunds, role access and signed private file delivery.
-- Academy video assets are not yet uploaded; private playback remains fail-closed.
-
-## Fixed CV group catalog
-- `ggs_cv_group_products`: administrator-controlled fixed-size group, AED price and active status.
-- `ggs_company_cv_requests.group_product_id`: selected product; `quoted_cv_count` and `quoted_price_fils` snapshot the terms for that order.
-- The server must verify role, product activation and exact order price before creating checkout. Do not permit browser-supplied amounts.
-- No products are seeded or enabled because sizes and prices have not yet been chosen.
+## Security
+- Keep payment status and company visibility server-controlled.
+- Video/audio recordings and CVs require consent, private storage, retention rules and appropriate access checks.
+- AI assessments must be tested for accuracy, fairness and human escalation.
+- Never automatically publish profiles upon payment alone without explicit visibility consent.
+- No separate Academy subscriptions or course payments.
+- Academy video playback must not be gated by the AED 49 company-visibility fee. Keep private videos inaccessible until a separate safe authenticated learning access flow is implemented.
