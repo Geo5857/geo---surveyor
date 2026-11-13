@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import LessonPlayer from "@/components/academy/LessonPlayer";
 
 type Course = { id: string; title: string; description: string | null; slug: string };
 type Lesson = { id: string; title: string; position: number; body: string | null };
-type Video = { lesson_id: string; title: string; source_type: string; youtube_video_id: string | null };
+type Video = { id: string; lesson_id: string; title: string; source_type: string; youtube_video_id: string | null };
 export const dynamic = "force-dynamic";
 
 async function readTable<T>(table: string, params: Record<string, string>): Promise<T[]> {
@@ -27,7 +28,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     select: "id,title,position,body", course_id: `eq.${course.id}`, is_published: "eq.true", order: "position.asc"
   });
   const videos = lessons.length ? await readTable<Video>("ggs_academy_videos", {
-    select: "lesson_id,title,source_type,youtube_video_id",
+    select: "id,lesson_id,title,source_type,youtube_video_id",
     lesson_id: `in.(${lessons.map(l => l.id).join(",")})`,
     is_published: "eq.true"
   }) : [];
@@ -40,12 +41,10 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     {lessons.length ? <ol style={{ paddingLeft: 24 }}>
       {lessons.map(lesson => {
         const video = videosByLesson.get(lesson.id);
-        const youtubeId = video?.source_type === "youtube" && /^[a-zA-Z0-9_-]{11}$/.test(video.youtube_video_id || "") ? video.youtube_video_id : null;
         return <li key={lesson.id} style={{ background: "#fff", padding: 22, borderRadius: 14, margin: "16px 0", lineHeight: 1.7 }}>
           <h3>{lesson.title}</h3>
           {lesson.body ? <p style={{ whiteSpace: "pre-wrap" }}>{lesson.body}</p> : <p>Lesson materials are being prepared.</p>}
-          {youtubeId ? <p><a href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer">Watch published lesson video ↗</a></p> :
-            <p style={{ color: "#66768a" }}>Private training video is not yet approved for playback.</p>}
+          <LessonPlayer lessonId={lesson.id} video={video} />
         </li>;
       })}
     </ol> : <p>Lessons are being reviewed before release.</p>}
